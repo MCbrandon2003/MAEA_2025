@@ -1,0 +1,17 @@
+Running MAE+FIA...
+comic-books resnet34 fool_rate: 83.0
+comic-books densenet161 fool_rate: 82.4
+comic-books inception-v3 fool_rate: 75.5
+comic-books vgg16-bn fool_rate: 82.6
+oxford-102-flower resnet34 fool_rate: 18.9
+oxford-102-flower densenet161 fool_rate: 21.5
+oxford-102-flower inception-v3 fool_rate: 25.4
+oxford-102-flower vgg16-bn fool_rate: 33.6
+birds-400 resnet34 fool_rate: 68.7
+birds-400 densenet161 fool_rate: 78.7
+birds-400 inception-v3 fool_rate: 52.5
+birds-400 vgg16-bn fool_rate: 71.1
+food-101 resnet34 fool_rate: 92.4
+food-101 densenet161 fool_rate: 90.9
+food-101 inception-v3 fool_rate: 91.5
+food-101 vgg16-bn fool_rate: 93.6

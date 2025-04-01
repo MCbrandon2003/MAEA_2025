@@ -1,0 +1,17 @@
+Running MAE+CDTA...
+comic-books resnet34 fool_rate: 86.4
+comic-books densenet161 fool_rate: 87.2
+comic-books inception-v3 fool_rate: 76.4
+comic-books vgg16-bn fool_rate: 87.0
+oxford-102-flower resnet34 fool_rate: 16.0
+oxford-102-flower densenet161 fool_rate: 24.3
+oxford-102-flower inception-v3 fool_rate: 30.1
+oxford-102-flower vgg16-bn fool_rate: 38.8
+birds-400 resnet34 fool_rate: 91.6
+birds-400 densenet161 fool_rate: 92.8
+birds-400 inception-v3 fool_rate: 54.1
+birds-400 vgg16-bn fool_rate: 88.0
+food-101 resnet34 fool_rate: 94.1
+food-101 densenet161 fool_rate: 95.1
+food-101 inception-v3 fool_rate: 93.3
+food-101 vgg16-bn fool_rate: 94.0
