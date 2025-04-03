@@ -372,6 +372,8 @@ def FIA():
 
 def CDA():
   G = GeneratorResnet()
+  # G = Pixel_VAE()
+  # G = VQ_VAE_2()
   G.load_state_dict(torch
         .load(f"CDA/saved_models/netG_-1_img_res152_imagenet_0_rl.pth"))
   G.to(device)
@@ -430,6 +432,72 @@ def CDTA():
         if step >=20:
           print(f"{name} {model_type} fool_rate:{fool/total}")
           break
+
+
+def train_baseline(dataloader, epochs, steps_per_epoch, classifier, MAE_model=None, filename="MAE.pth",
+                    ):
+    classifier.eval()
+    classifier.to(device)
+
+    if MAE_model is None:
+        MAE_model = prepare_mae_model(model_type="gan")
+    MAE_model.shuffle = False
+    MAE_model.to(device)
+    optimizer = torch.optim.Adam(MAE_model.parameters(),
+                                 lr=1e-5)  # define an optimizer for the "sharpness-aware" update
+
+    for blk in MAE_model.blocks:
+        for param in blk.parameters():
+                param.requries_grad = False
+
+    MAE_model.shuffle = False
+
+    if os.path.exists(filename):
+        print(f"loading from {filename}")
+        MAE_model.load_state_dict(torch.load(filename))
+
+    for param in classifier.parameters():
+        param.requires_grad = False
+
+    for epoch in range(epochs):
+        step = 0
+        for x, label in dataloader:
+            optimizer.zero_grad()
+            x = x.to(device);
+            label = label.to(device).squeeze()
+
+            _, decoded_token, _ = MAE_model(x, 0)
+
+            adv_x = MAE_model.unpatchify(decoded_token)
+            adv_x = project(x, adv_x)
+
+            loss = FDA_loss(adv_x, x, classifier, "features");
+            # TAP
+            # logits = classifier.forward(x)
+            # original_mids = FIA_map(x, label, classifier, "features", 1, 0)
+            # new_mids = FIA_map(adv_x, label, classifier, "features", 1, 0)
+            # loss = TAP_loss(logits, labels, adv_x, x, original_mids, new_mids)
+
+            # NRDM
+            # loss = NRDM_loss(x, adv_x, classifier, "features")
+            pred_adv = classifier(adv_x)
+            pred_clean = classifier(x)
+            fool = 0;
+            total = 0
+            fool += ((pred_adv.argmax(dim=1) != label) * (pred_clean.argmax(dim=1) == label)).sum()
+            total += (pred_clean.argmax(dim=1) == label).sum()
+            fool_rate = fool / total
+            loss.backward()
+            optimizer.step()
+            suc_rate = (pred_adv.argmax(dim=1) != label).sum() / x.shape[0]
+
+            print(f"epoch {epoch} step {step}:\
+loss:{loss:.2f} fool_rate:{fool_rate:.3f} total:{total}")
+            step += 1
+            if (step >= steps_per_epoch):
+                break
+        torch.save(MAE_model.state_dict(), filename)
+        print(f"Model saved to {filename}")
 
 if __name__ == "__main__":
   MAE("mae_models/CMAE_vgg16_timm.pth")

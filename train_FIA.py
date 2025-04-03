@@ -79,6 +79,9 @@ def train_FIA(dataloader,epochs,steps_per_epoch,classifier,MAE_model=None,filena
           mask_ratio=0.5,freeze_encoder=False,F_args=None,DI=False,lda=1):
     classifier.eval()
     classifier.to(device)
+    # G = GeneratorResnet()
+    # G = Pixel_VAE()
+    # G = VQ_VAE_2()
 
     if MAE_model is None:
         MAE_model = prepare_mae_model(model_type="gan")
@@ -115,10 +118,10 @@ def train_FIA(dataloader,epochs,steps_per_epoch,classifier,MAE_model=None,filena
             _,decoded_token,_ = MAE_model(x,0)
             
             adv_x = MAE_model.unpatchify(decoded_token)
+            # adv_x = G(x)
             adv_x = project(x, adv_x)
             if DI == True:
               adv_x = input_diversity(adv_x)
-
             if F_args is None:
               pred_adv = classifier.forward(adv_x)
               pred_clean = classifier.forward(x)

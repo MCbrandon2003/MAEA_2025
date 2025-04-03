@@ -218,7 +218,7 @@ def write_log(message, filename="logfile.log"):
         print(f"Error writing to log file: {e}")
 
 
-def test_MAE_CDTA(filename, info=""):
+def test_MAE(filename, info=""):
     datasets = ["birds-400","comic-books","food-101","oxford-102-flower"]
     models = ["densenet161","inception_v3","resnet34","vgg16_bn"]
     write_log(f"info={info}")
@@ -270,6 +270,9 @@ def train(dataloader, epochs, MAE_model=None, filename="MAE_CDTA_KD.pth",
         nb_iter=30, 
         alpha=4./255.
     )
+    # G = GeneratorResnet()
+    # G = Pixel_VAE()
+    # G = VQ_VAE_2()
     
     if MAE_model is None:
         MAE_model = prepare_mae_model(model_type="gan")
@@ -299,8 +302,10 @@ def train(dataloader, epochs, MAE_model=None, filename="MAE_CDTA_KD.pth",
             optimizer.zero_grad()
             x = x.to(device);label = label.to(device)
             _,decoded_token,_ = MAE_model(x,mask_ratio=0)
+            # _, encoded_token,_ = MAE_model.forward_encoder(x, mask_ratio=0)
             optimizer.zero_grad()
             adv_x = MAE_model.unpatchify(decoded_token)
+            # adv_x = G(x)
             adv_x = project(x,adv_x)
 
             # 计算CDTA的损失函数
