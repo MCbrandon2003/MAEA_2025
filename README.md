@@ -23,11 +23,11 @@
              [MAE_FIA](https://drive.google.com/file/d/1-KZKvlsun6i84q7g9CVvMTf222yESyKc/view?usp=drive_link)
 
 ## MAE+CDTA:
-'''
+```
 python train_CDTA.py
-'''
+```
 
 ## MAE+FIA:
-'''
+```
 python train_FIA.py
-'''
+```
