@@ -218,6 +218,59 @@ def write_log(message, filename="logfile.log"):
         print(f"Error writing to log file: {e}")
 
 
+def test_MAE_ImageNet(filename, info=""):
+    write_log(f"info={info}")
+    densenet161 = torchvision.models.densenet161(pretrained=True)
+    inception_v3 = torchvision.models.inception_v3(pretrained=True)
+    resnet34 = torchvision.models.resnet34(pretrained=True)
+    vgg16_bn = torchvision.models.vgg16_bn(pretrained=True)
+    models = {"densenet161": densenet161,
+              "inception_v3": inception_v3,
+              "resnet34": resnet34,
+              "vgg16_bn": vgg16_bn
+              }
+    MAE_model = prepare_mae_model(model_type="gan")
+    MAE_model.shuffle = False
+    MAE_model.to(device)
+    MAE_model.eval()
+
+    if os.path.exists(filename):
+        print(f"loading from {filename}")
+        MAE_model.load_state_dict(torch.load(filename))
+
+    for param in MAE_model.parameters():
+        param.requires_grad = False
+
+    dataset = datasets.ImageFolder("imagenet/val", transform=preprocess)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=4, prefetch_factor=3)
+    print(f"start {dataset}")
+    for model in models.keys():
+        net = models[model]
+        fool = 0
+        total = 0
+        step = 0
+
+        for x, label in dataloader:
+            x = x.to(device);
+            label = label.to(device)
+            encoded_token, _, ids_restore = MAE_model.forward_encoder(x, 0)
+            decoded_token = MAE_model.forward_decoder(encoded_token, ids_restore)
+            adv_x = MAE_model.unpatchify(decoded_token)
+            adv_x = project(x, adv_x)
+            pred_adv = net.forward(adv_x)
+            pred_clean = net.forward(x)
+            fool += ((pred_adv.argmax(dim=1) != label) * (pred_clean.argmax(dim=1) == label)).sum()
+            total += (pred_clean.argmax(dim=1) == label).sum()
+            step += 1
+            if step >= 20:
+                print(f"{dataset} {model} fool_rate:{fool / total}")
+                write_log(f"{dataset} {model} fool_rate:{fool / total}")
+                break
+
+
+
+
+
 def test_MAE(filename, info=""):
     datasets = ["birds-400","comic-books","food-101","oxford-102-flower"]
     models = ["densenet161","inception_v3","resnet34","vgg16_bn"]

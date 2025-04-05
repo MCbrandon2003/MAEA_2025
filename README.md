@@ -21,3 +21,13 @@
 )
 对抗生成器MAE: [MAE_CDTA](https://drive.google.com/file/d/1dgo_3dcoaqFIeb0iRBvabuFN3KYpa_V1/view?usp=drive_link)
              [MAE_FIA](https://drive.google.com/file/d/1-KZKvlsun6i84q7g9CVvMTf222yESyKc/view?usp=drive_link)
+
+# MAE+CDTA:
+'''
+python train_CDTA.py
+'''
+
+# MAE+FIA:
+'''
+python train_FIA.py
+'''
