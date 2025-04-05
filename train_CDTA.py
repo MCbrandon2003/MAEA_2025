@@ -374,7 +374,7 @@ def train(dataloader, epochs, MAE_model=None, filename="MAE_CDTA_KD.pth",
 
 if __name__ == '__main__':
     preprocess = get_preprocess()
-    dataset = torchvision.datasets.ImageFolder("CDTA/dataset/imagenet-mini/train",transform=preprocess)
+    dataset = torchvision.datasets.ImageFolder("imagenet/train",transform=preprocess)
     dataloader = torch.utils.data.DataLoader(dataset,shuffle=True,batch_size=32,\
                                                 num_workers=2,prefetch_factor=4)
     train(dataloader, 2, filename = "MAE_CDTA.pth")

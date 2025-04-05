@@ -259,7 +259,7 @@ def test_CDA_ImageNet(filename):
 if __name__ == "__main__":
     preprocess = get_preprocess()
     classifier = torchvision.models.vgg16(pretrained=True)
-    dataset = datasets.ImageFolder("../../../imagenet-mini/train",transform=preprocess)
+    dataset = datasets.ImageFolder("imagenet/train",transform=preprocess)
     dataloader = torch.utils.data.DataLoader(dataset,batch_size=32,shuffle=True,num_workers=2,prefetch_factor=4)
     
     F_args = FIA_args(classifier,"features")
