@@ -8,6 +8,11 @@
 [comic books](https://www.kaggle.com/datasets/cenkbircanoglu/comic-books-classification)
 [oxford 102 flower](https://www.robots.ox.ac.uk/~vgg/data/flowers/102/)
 
+### imagenet
+```
+curl -L -o ./imagenet/imagenetmini-100.zip https://www.kaggle.com/api/v1/datasets/download/ifigotin/imagenetmini-1000
+```
+
 ## 预训练模型
 将文件放在 ./CDTA/pretrained 目录下
 目标模型: [birds-400](https://github.com/LiulietLee/CDTA/releases/download/v1.0/birds-400.zip)
